@@ -1,10 +1,12 @@
 from xml.dom import minidom
 from os import listdir
+import os
 from os.path import isfile, join
+from pathlib import Path
 
 global path
-path = 'C:\\Users\\timop\\Downloads\\Icons-Schwarz\\20190701_Icons\\SVG\\angepasst_ttkf\\' #'C:\\Users\\timop\Downloads\\Icons-Lidl-Beispiele\\angepasst_ttkf\\'
-export_path = 'C:\\Users\\timop\\Downloads\\Icons-Schwarz\\20190701_Icons\\SVG\\angepasst_ttkf\\umbenannt\\'
+path = "C:\\Users\\timop\\Downloads\\Icons-Schwarz_neu\\20190701_Icons\\SVG\\export\\" # 'C:\\Users\\timop\\Downloads\\Icons_Lidl_all\BesondereAnlässe\\' #'C:\\Users\\timop\\Downloads\\Icons-Schwarz\\20190701_Icons\\SVG\\angepasst_ttkf\\' #'C:\\Users\\timop\Downloads\\Icons-Lidl-Beispiele\\angepasst_ttkf\\'
+export_path = "C:\\Users\\timop\\Downloads\\Icons-Schwarz_neu\\20190701_Icons\\SVG\\final\\" # 'C:\\Users\\timop\\Downloads\\Icons_Lidl_all\BesondereAnlässe\\modified\\' #'C:\\Users\\timop\\Downloads\\Icons-Schwarz\\20190701_Icons\\SVG\\angepasst_ttkf\\umbenannt\\'
 
 sc_icons_start_number = 1
 # CHOOSE FILL-COLOR BEFORE EXECUTION
@@ -32,8 +34,12 @@ def setIDs(rootnode, file):
         print(object_paths[0].getAttribute('d'))
         print(object_paths[0].hasAttribute('id'))
         for o_path in object_paths:
-            o_path.setAttribute('id','sc-icon-color')
+            #changed 'id' to 'class'
+            o_path.setAttribute('class', 'sc-icon-color')
             o_path.setAttribute('fill', color)
+            #changed: remove id
+            if o_path.hasAttribute('id'):
+                o_path.removeAttribute('id')
         #saveSvg(rootnode, export_path + file)
         saveSvg(rootnode, svg_id)
         return svg_id
@@ -73,9 +79,15 @@ def deleteGroup(svg_id):
 if __name__ == '__main__':
     # check all svg files in directory
     all_svg_files = [f for f in listdir(path) if isfile(join(path, f))]
+
+    # changed: create dir
+    Path(export_path).mkdir(parents=True, exist_ok=True)
     f = open(export_path + "svg-report.txt", "w")
     for file in all_svg_files:
-        if file.endswith('.svg'):
+        # changed: exclude open.svg
+        if file.endswith('open.svg'):
+            continue
+        elif file.endswith('.svg'):
             file_path = path + str(file)
             print(file_path)
             rootnode = parseSvgXml(file_path)
